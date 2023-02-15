@@ -1,0 +1,10 @@
+{
+  "default": {
+    "sensitivity1": 800,
+    "sensitivity2": 1600,
+    "polling_rate": 1000,
+    "logo_color": "rgbgradient(duration=1000; colors=0%: #ff0000, 33%: #00ff00, 66%: #0000ff)",
+    "wheel_color": "rgbgradient(duration=1000; colors=0%: #ff0000, 33%: #00ff00, 66%: #0000ff)",
+    "buttons_mapping": "buttons(button1=button1; button2=button2; button3=button3; button4=button4; button5=button5)"
+  }
+}

@@ -1,0 +1,9 @@
+[Unit]
+Description=OpenRGB profile loader
+
+[Service]
+Type=oneshot
+ExecStart=/home/aapokossi/OpenRGB/openrgb --profile Off.orp
+
+[Install]
+WantedBy=default.target

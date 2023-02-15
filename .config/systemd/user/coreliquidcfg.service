@@ -1,0 +1,9 @@
+[Unit]
+Description=MSI AIO startup service
+
+[Service]
+Type=simple
+ExecStart=/home/aapokossi/liquidctl/extra/coreliquid_ctl using coretemp.package_id_0 control fans with smart and "waterblock fan" with smart and pump with smart
+
+[Install]
+WantedBy=default.target
