@@ -129,7 +129,7 @@ theme.awesome_icon = theme_assets.awesome_icon(
 
 -- Define the icon theme for application icons. If not set then the icons
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
-theme.icon_theme = '/home/aapokossi/.local/share/icons/Griffin-Ghost-v1.3'
+theme.icon_theme = '/usr/share/icons/Griffin-Ghost-v1.3'
 
 return theme
 

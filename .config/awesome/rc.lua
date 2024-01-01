@@ -51,7 +51,7 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init("/home/aapokossi/.config/awesome/theme.lua")
+beautiful.init(os.getenv("HOME").."/.config/awesome/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "alacritty"
@@ -106,7 +106,7 @@ mymainmenu = awful.menu({ items = { {"power", 'rofi -show p -modi "p:~/.local/bi
                                   }
                         })
 
-mylauncherpre = awful.widget.launcher({ image = "/home/aapokossi/.config/awesome/arch_logo.svg",menu = mymainmenu })
+mylauncherpre = awful.widget.launcher({ image = os.getenv("HOME").."/.config/awesome/arch_logo.svg",menu = mymainmenu })
 mylauncher = wibox.container.margin(mylauncherpre,8,8,3,3)
 
 
@@ -318,7 +318,7 @@ awful.screen.connect_for_each_screen(function(s)
 --                 {
 --                     {
 --                         id     = 'icon_role',
--- 	                image = "/home/aapokossi/Pictures/empty_sphere_30x30.png",
+-- 	                image = os.getenv("HOME").."/Pictures/empty_sphere_30x30.png",
 --                         widget = wibox.widget.imagebox,
 --                     },
 --                     layout = wibox.layout.fixed.horizontal,
