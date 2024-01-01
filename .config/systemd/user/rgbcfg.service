@@ -3,7 +3,8 @@ Description=OpenRGB profile loader
 
 [Service]
 Type=oneshot
-ExecStart=/home/aapokossi/OpenRGB/openrgb --profile Off.orp
+ExecStart=/usr/bin/openrgb --profile Off.orp
+RemainAfterExit=yes
 
 [Install]
 WantedBy=default.target

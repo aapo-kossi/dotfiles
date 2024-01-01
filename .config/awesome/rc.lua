@@ -68,9 +68,10 @@ modkey = "Mod4"
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
     -- awful.layout.suit.floating,
-    awful.layout.suit.spiral.dwindle,
     awful.layout.suit.tile,
     awful.layout.suit.tile.left,
+    awful.layout.suit.spiral.dwindle,
+    awful.layout.suit.spiral.dwindle,
     awful.layout.suit.tile.bottom,
     awful.layout.suit.tile.top,
     awful.layout.suit.fair,
@@ -118,9 +119,9 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 -- Define background box for wibar widgets (wrapper for wibox.container.background)
 --widget shape
 local widget_shape = function(cr, width, height, last)
-  
+
   offset = 5
-  
+
   cr:move_to( -1,      0       )
   cr:line_to( width+5, 0       )
   cr:line_to( width+5, height  )
@@ -132,7 +133,7 @@ local widget_shape = function(cr, width, height, last)
   cr:line_to( offset,  height )
   cr:curve_to(0,       0.85*height,7,0.9*height,7,0.85*height)
   cr:curve_to(11,      0.7*height,20,0.5*height,-1,0)
-  
+
   cr:close_path()
 end
 
@@ -195,7 +196,7 @@ vicious.register(nettext, vicious.widgets.net, format_net, 2)
 -- Volume widget
 function voltext (widget, args)
   function vol_icon (mute)
-    if mute then return "ﱝ " else return"墳" end
+    if mute then return "󰝟 " else return"󰕾" end
   end
 
   return " "..vol_icon(args[2])..tostring(args[1])
@@ -208,13 +209,13 @@ vicious.register(myvoltext, vicious.widgets.volumepa, voltext, 5, 3)
 -- Disk usage widget
 myfstext = wibox.widget.textbox()
 myfsbox = add_background(myfstext)
-vicious.register(myfstext, vicious.widgets.fs, "  ${/home used_p}% (home) ${/ used_p}% (root)", 113)
+vicious.register(myfstext, vicious.widgets.fs, " 󰋊 ${/home used_p}% (home) ${/ used_p}% (root)", 113)
 
 
 -- Memory widget
 function memtext (widget, args)
   return (" mem  %.1f / %.1fGiB"):format(
-    args[2]/1024,args[3]/1024) 
+    args[2]/1024,args[3]/1024)
 end
 mymemtext = wibox.widget.textbox()
 mymembox = add_background(mymemtext)
@@ -296,12 +297,12 @@ awful.screen.connect_for_each_screen(function(s)
 
     -- Each screen has its own tag table.
     tags = awful.tag({ "", "", "", "", "", "" }, s, awful.layout.layouts[1])
-    
+
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
     -- Create an imagebox widget which will contain an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
-    color_num = 1 
+    color_num = 1
     s.mylayoutbox = add_background(awful.widget.layoutbox(s))
     s.mylayoutbox:buttons(gears.table.join(
                            awful.button({ }, 1, function () awful.layout.inc( 1) end),
@@ -328,10 +329,10 @@ awful.screen.connect_for_each_screen(function(s)
 --             },
 --             id     = 'background_role',
 --             widget = wibox.container.background,
---         },	
+--         },
 -- 	buttons = taglist_buttons,
 --     }
--- 
+--
 
     s.mytaglist = require("mytaglist")(s)
 
@@ -367,7 +368,7 @@ awful.screen.connect_for_each_screen(function(s)
 		    },
 		    layout = wibox.layout.fixed.horizontal,
 		},
-                id    = 'text_margin_role', 
+                id    = 'text_margin_role',
 	        left  = 15,
 	        right = 15,
         	widget= wibox.container.margin,
@@ -376,8 +377,8 @@ awful.screen.connect_for_each_screen(function(s)
 	    widget = wibox.container.background,
         },
     }
- 
-    beautiful.bg_systray = get_bg_color(false) 
+
+    beautiful.bg_systray = get_bg_color(false)
 
     local systray = wibox.widget {
         wibox.widget.systray(),
@@ -388,7 +389,7 @@ awful.screen.connect_for_each_screen(function(s)
     local tray_widget = add_background(systray)
 
     -- Create the wibox
-    beautiful.wibar_height = 30 
+    beautiful.wibar_height = 30
     s.mywibox = awful.wibar({x=0, y=5, screen = s, bg = beautiful.bg_normal.."00", border_color = "#e5e9f0", border_width=0 })
 
     -- Add widgets to the wibox
@@ -415,7 +416,7 @@ awful.screen.connect_for_each_screen(function(s)
         },
 
     }
-    
+
 end)
 
 
@@ -433,9 +434,9 @@ root.buttons(gears.table.join(
 globalkeys = gears.table.join(
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
-    awful.key({ modkey,           }, "Left",   awful.tag.viewprev,
+    awful.key({ modkey,           }, "i",   awful.tag.viewprev,
               {description = "view previous", group = "tag"}),
-    awful.key({ modkey,           }, "Right",  awful.tag.viewnext,
+    awful.key({ modkey,           }, "o",  awful.tag.viewnext,
               {description = "view next", group = "tag"}),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore,
               {description = "go back", group = "tag"}),
@@ -504,13 +505,19 @@ globalkeys = gears.table.join(
     awful.key({ modkey,           }, "e",     function () awful.spawn("pcmanfm")                end,
               {description = "open file browser", group = "applications"}),
     awful.key({ modkey,           }, "F10",     function ()
-                  awful.spawn("scrot -s '~/Pictures/screenshot_%H%M-%d-%m-%Y.png'")
+                  awful.util.spawn_with_shell("scrot -s -f  ~/'Pictures/screenshot_%H%M-%d-%m-%Y.png'")
               end,
               {description = "Interactive screenshot tool", group = "applications"}),
     awful.key({ modkey,  "Control"  }, "F10",     function ()
                   awful.util.spawn_with_shell("scrot -f ~/'Pictures/screenshot_%H%M-%d-%m-%Y.png'")
               end,
               {description = "Fullscreen screenshot", group = "applications"}),
+    awful.key({ modkey,           }, "BackSpace", function ()
+                  awful.util.spawn_with_shell('rofi -show p -modi "p:~/.local/bin/rofi-power-menu  \
+                               --choices=cancel/shutdown/reboot/suspend/logout" \
+					           -no-click-to-exit -theme-str "window {width: 10%; height:10%;}"')
+              end,
+              {description = "Power menu", group = "launcher"}),
 
 
 

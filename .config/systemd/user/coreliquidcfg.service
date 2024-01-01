@@ -3,7 +3,11 @@ Description=MSI AIO startup service
 
 [Service]
 Type=simple
-ExecStart=/home/aapokossi/liquidctl/extra/coreliquid_ctl using coretemp.package_id_0 control fans with smart and "waterblock fan" with smart and pump with smart
+ExecStart=/home/aapokossi/.local/lib/venvs/liquidctl/bin/python /home/aapokossi/liquidctl/extra/yoda \
+    --interval 1 --use-device-controller \
+    control fans with smart on coretemp.package_id_0\
+    and "waterblock fan" with smart on coretemp.package_id_0\
+    and pump with smart on coretemp.package_id_0
 
 [Install]
 WantedBy=default.target

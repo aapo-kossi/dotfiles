@@ -11,14 +11,14 @@ local themes_path = gfs.get_themes_dir()
 
 local theme = {}
 
-theme.font          = "JetBrainsMonoNL Nerd Font Mono Regular 8"
+theme.font          = "JetBrainsMonoNL Nerd Font Mono Regular 10"
 
-theme.bg_normal     = "#2e3440" 
+theme.bg_normal     = "#2e3440"
 theme.bg_focus      = "#535d6c"
 -- theme.bg_focus      = "#2e3440"
 theme.bg_urgent     = "#ff0000"
 theme.bg_minimize   = "#444444"
-theme.bg_systray    = "#2e3440" 
+theme.bg_systray    = "#2e3440"
 
 theme.fg_normal     = "#ced4de"
 theme.fg_focus      = "#ffffff"
@@ -54,7 +54,7 @@ local taglist_square_size = dpi(4)
 -- )
 theme.taglist_squares_sel = nil
 theme.taglist_squares_unsel = nil
-theme.taglist_bg_focus = "#00000000" 
+theme.taglist_bg_focus = "#00000000"
 -- theme.taglist_bg_urgent = theme.bg_normal
 -- theme.taglist_bg_occupied = theme.bg_normal
 -- Variables set for theming notifications:
