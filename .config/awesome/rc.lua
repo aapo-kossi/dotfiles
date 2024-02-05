@@ -19,6 +19,7 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 -- when client with a matching name is opened:
 require("awful.hotkeys_popup.keys")
 local vicious = require("vicious")
+local volume_widget = require('awesome-wm-widgets.pactl-widget.volume')
 vicious.contrib = require("vicious.contrib")
 local utf8 = require("utf8")
 local math = require("math")
@@ -194,16 +195,20 @@ vicious.cache(vicious.widgets.net)
 vicious.register(nettext, vicious.widgets.net, format_net, 2)
 
 -- Volume widget
-function voltext (widget, args)
-  function vol_icon (mute)
-    if mute then return "󰝟 " else return"󰕾" end
-  end
-
-  return " "..vol_icon(args[2])..tostring(args[1])
-end
-myvoltext = wibox.widget.textbox()
-myvolbox = add_background(myvoltext)
-vicious.register(myvoltext, vicious.widgets.volumepa, voltext, 5, 3)
+myvolwidget = volume_widget{
+    widget_type = 'icon_and_text',
+    refresh_rate = 2^16-1
+}
+myvolbox = add_background(myvolwidget)
+-- function voltext (widget, args)
+--   function vol_icon (mute)
+--     if mute then return "󰝟 " else return"󰕾" end
+--   end
+--
+--   return " "..vol_icon(args[2])..tostring(args[1])
+-- end
+-- myvoltext = wibox.widget.textbox()
+-- vicious.register(myvoltext, vicious.widgets.volumepa, voltext, 5, 3)
 
 
 -- Disk usage widget
@@ -551,7 +556,12 @@ globalkeys = gears.table.join(
                     history_path = awful.util.get_cache_dir() .. "/history_eval"
                   }
               end,
-              {description = "lua execute prompt", group = "awesome"})
+              {description = "lua execute prompt", group = "awesome"}),
+
+
+    awful.key({}, "XF86AudioRaiseVolume", function () volume_widget:inc(5) end),
+    awful.key({}, "XF86AudioLowerVolume", function () volume_widget:dec(5) end),
+    awful.key({}, "XF86AudioMute", function () volume_widget:toggle() end)
     -- Menubar
     -- awful.key({ modkey }, "p", function() menubar.show() end,
     --           {description = "show the menubar", group = "launcher"})

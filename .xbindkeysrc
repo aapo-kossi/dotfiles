@@ -39,7 +39,7 @@
 
 # Examples of commands:
 
-# "xbindkeys_show" 
+# "xbindkeys_show"
 #   control+shift + q
 
 # set directly keycode (here control + f with my keyboard)
@@ -66,17 +66,17 @@
 #  Control + b:2 + Release
 
 # Increase volume
-"pactl set-sink-volume @DEFAULT_SINK@ +1000"
-   XF86AudioRaiseVolume
-
-# Decrease volume
-"pactl set-sink-volume @DEFAULT_SINK@ -1000"
-   XF86AudioLowerVolume
-
-# Mute volume
-"pactl set-sink-mute @DEFAULT_SINK@ toggle"
-   XF86AudioMute
-
-# Mute microphone
-"pactl set-source-mute @DEFAULT_SOURCE@ toggle"
-   XF86AudioMicMute
+#pactl set-sink-volume @DEFAULT_SINK@ +1000"
+#   XF86AudioRaiseVolume
+#
+## Decrease volume
+#"pactl set-sink-volume @DEFAULT_SINK@ -1000"
+#   XF86AudioLowerVolume
+#
+## Mute volume
+#"pactl set-sink-mute @DEFAULT_SINK@ toggle"
+#   XF86AudioMute
+#
+## Mute microphone
+#"pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+#   XF86AudioMicMute
