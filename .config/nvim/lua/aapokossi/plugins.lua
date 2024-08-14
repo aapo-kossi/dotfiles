@@ -76,10 +76,32 @@ require("lazy").setup({
      lazy = false,
      priority = 1000,
      name = 'tokyonight',
-     config = function()
-       vim.cmd('colorscheme tokyonight')
-     end
+     opts = {
+       style = "night",
+       transparent = true,
+       styles = {
+         sidebars = "transparent",
+         floats = "transparent",
+       },
+       on_colors = function(colors)
+         colors.bg_statusline = colors.none
+       end,
+     },
    },
+
+  -- Plugin: lualine
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = {
+      theme = 'tokyonight',
+      sections = {
+        lualine_x = {'filetype'},
+        lualine_y = {'location'},
+        lualine_z = {''},
+      },
+    },
+  },
 
   -- Plugin: lsp-zero with dependencies
   {

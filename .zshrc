@@ -1,3 +1,7 @@
+if [ -x "$(command -v tmux)" ] && [ -n "${DISPLAY}" ] && [ -z "${TMUX}" ]; then
+    tmux new-session >/dev/null 2>&1
+fi
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -8,13 +12,14 @@ ZSH=/usr/share/oh-my-zsh/
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-case $TERM in
-  alacritty*|xterm*|tmux*)
-    ZSH_THEME="bullet-train";;
-  *)
-    ZSH_THEME="candy";;
-esac
+# case $TERM in
+#   alacritty*|xterm*|tmux*)
+#     ZSH_THEME="bullet-train";;
+#   *)
+#     ZSH_THEME="candy";;
+# esac
 
+ZSH_THEME="candy"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -109,6 +114,7 @@ alias la='ls -lAh --color=auto'
 alias ll='ls -lh --color=auto'
 alias vi='nvim'
 alias vim='nvim'
+alias f='fastfetch'
 alias dotconfig='/usr/bin/git --git-dir=$HOME/dotfiles/ --work-tree=$HOME'
 
 ZSH_CACHE_DIR=$HOME/.cache/oh-my-zsh

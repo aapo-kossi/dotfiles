@@ -1,0 +1,50 @@
+# TokyoNight Alacritty Colors
+# Default colors
+[colors.primary]
+background = '#1a1b26'
+foreground = '#c0caf5'
+
+[colors.cursor]
+cursor = '#c0caf5'
+text = '#1a1b26'
+
+# Normal colors
+[colors.normal]
+black = '#15161e'
+red = '#f1566e'
+green = '#8ece5a'
+yellow = '#d9a858'
+blue = '#6e9afc'
+magenta = '#bb8af7'
+cyan = '#7dc5f5'
+white = '#a9b1d6'
+
+# Bright colors
+[colors.bright]
+black = '#414868'
+red = '#f7768e'
+green = '#9ece6a'
+yellow = '#e0af68'
+blue = '#7aa2f7'
+magenta = '#bb9af7'
+cyan = '#7dcfff'
+white = '#c0caf5'
+
+# Indexed Colors
+[[colors.indexed_colors]]
+index = 16
+color = '#ff9e64'
+
+[[colors.indexed_colors]]
+index = 17
+color = '#db4b4b'
+
+[font]
+size = 12.0
+
+[font.normal]
+family = "Hack Nerd Font Mono"
+style = "Regular"
+
+[window]
+opacity = 0.2
