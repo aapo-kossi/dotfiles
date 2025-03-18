@@ -115,7 +115,14 @@ alias ll='ls -lh --color=auto'
 alias vi='nvim'
 alias vim='nvim'
 alias f='fastfetch'
+alias p='pass -c'
 alias dotconfig='/usr/bin/git --git-dir=$HOME/dotfiles/ --work-tree=$HOME'
+
+
+# use ssh configs for autocompletion
+zstyle ':completion:*:ssh:*' hosts
+
+# XDG_CURRENT_DESKTOP='gnome'
 
 ZSH_CACHE_DIR=$HOME/.cache/oh-my-zsh
 if [[ ! -d $ZSH_CACHE_DIR ]]; then

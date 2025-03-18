@@ -85,6 +85,7 @@ require("lazy").setup({
        },
        on_colors = function(colors)
          colors.bg_statusline = colors.none
+         colors.comment = "#b595af"
        end,
      },
    },
@@ -102,6 +103,17 @@ require("lazy").setup({
       },
     },
   },
+
+  -- Plugin: markdown previewing
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    build = function() vim.fn["mkdp#util#install"]() end,
+  },
+
+  -- Plugin: Git integration
+  { "tpope/vim-fugitive" },
 
   -- Plugin: lsp-zero with dependencies
   {

@@ -40,6 +40,17 @@ require("formatter").setup {
     filetype = {
         python = {
             require("formatter.filetypes.python").black
-        }
+        },
+        cpp = {
+            require("formatter.filetypes.cpp").clangformat,
+            function()
+                return {
+                    exe = "clang-format",
+                    args = {"-style=llvm"},
+                    stdin = true,
+
+                }
+            end
+        },
     }
 }
