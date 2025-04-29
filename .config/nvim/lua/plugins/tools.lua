@@ -36,8 +36,8 @@ return {
   {
     "mrjones2014/legendary.nvim",
     lazy = false,
-    priority = 10000,
-    init = function()
+    priority = 500,
+    config = function()
       local keys = require("config.keymaps")
       local cmds = require("config.commands")
       require("legendary").setup({
@@ -158,9 +158,9 @@ return {
         log_level = "DEBUG",
       },
     },
-    init = function()
-      vim.cmd([[cab cc CodeCompanion]])
-    end,
+    -- init = function()
+    --   vim.cmd([[cab cc CodeCompanion]])
+    -- end,
     opts = {},
     config = function()
       require("legendary").keymaps({
