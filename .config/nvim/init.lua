@@ -1,1 +1,1 @@
-require("aapokossi")
+require("config")

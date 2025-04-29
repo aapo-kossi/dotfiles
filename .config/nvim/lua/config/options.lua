@@ -1,4 +1,3 @@
-
 vim.opt.nu = true
 vim.opt.relativenumber = true
 
@@ -27,3 +26,10 @@ vim.opt.isfname:append("@-@")
 
 vim.opt.colorcolumn = "80"
 
+vim.opt.diffopt:append('vertical')
+
+-- Set leader key
+vim.g.mapleader = " "
+
+-- Folds
+vim.wo.foldlevel = 99

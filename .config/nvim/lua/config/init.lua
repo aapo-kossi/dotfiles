@@ -1,0 +1,5 @@
+require("config.options")
+require("config.lazy")
+vim.defer_fn(function()
+  vim.cmd.colorscheme("tokyonight-night")
+end, 1000)
