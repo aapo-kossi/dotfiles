@@ -1,11 +1,85 @@
+local function feedkey(key, mode)
+  vim.fn.feedkeys(vim.keycode(key), mode or vim.api.nvim_get_mode().mode)
+end
+
 return {
 
-  -- Plugin: Mason (ls installation)
-  { 'williamboman/mason.nvim' },
-
   -- Plugin: mason lsp integration
-  { 'williamboman/mason-lspconfig.nvim' },
+  {
+    'mason-org/mason-lspconfig.nvim',
+    opts = {
+      ensure_installed = {
+        "lua_ls",
+        "pyright",
+        "clangd",
+        "rust_analyzer"
+      },
+    },
+    dependencies = {
+      { 'mason-org/mason.nvim', opts = {} },
+      "neovim/nvim-lspconfig",
+    }
+  },
 
+  -- Plugin: Snippet engine
+  {
+    "L3MON4D3/LuaSnip",
+    -- follow latest release.
+    dependencies = {
+      "rafamadriz/friendly-snippets",
+
+    },
+    version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+    -- install jsregexp (optional!).
+    build = "make install_jsregexp",
+    config = function()
+      local ls = require("luasnip")
+      local legendary = require("legendary")
+
+      require("luasnip.loaders.from_vscode").lazy_load()
+      require("luasnip.loaders.from_lua").lazy_load({ paths = "~/.config/nvim/snippets" })
+
+      ls.filetype_extend("cpp", { "cppdoc" })
+      ls.config.set_config({
+        history = true,
+        update_events = "TextChanged,TextChangedI",
+      })
+
+      legendary.keymaps({
+        itemgroup = "snippets",
+        icon = "",
+        description = "LuaSnip navigation",
+        keymaps = {
+          {
+            "<C-e>",
+            function()
+              if ls.choice_active() then
+                ls.change_choice(1)
+              end
+            end,
+            description = "Select choice node alternative",
+            mode = { "i", "s" },
+          },
+          {
+            "<C-j>",
+            function()
+              return ls.jumpable() and ls.expand_or_jump()
+            end,
+            description = "Jump to next placeholder",
+            mode = { "i", "s" },
+          },
+          {
+            "<C-k>",
+            function()
+              return ls.in_snippet() and ls.jumpable(-1) and ls.jump(-1)
+            end,
+            description = "Jump to previous placeholder",
+            mode = { "i", "s" },
+          },
+        },
+      })
+    end,
+  },
   -- completions
   {
     'saghen/blink.cmp',
@@ -17,7 +91,7 @@ return {
     -- If you use nix, you can build from source using latest nightly rust with:
     -- build = 'nix run .#build-plugin',
     dependencies = {
-      "rafamadriz/friendly-snippets",
+      { "L3MON4D3/LuaSnip", version = 'v2.*' },
     },
 
     ---@module 'blink.cmp'
@@ -36,13 +110,21 @@ return {
       --
       -- See :h blink-cmp-config-keymap for defining your own keymap
       keymap = {
-        preset = 'default',
-        ['<C-e>'] = { 'hide', 'fallback' },
-        ['<CR>'] = { 'select_and_accept', 'fallback' },
-        ['<Tab>'] = { 'select_next', 'fallback' },
-        ['<S-Tab>'] = { 'select_prev', 'fallback' },
+        preset = 'none',
+        -- ['<Up>'] = { 'select_prev', 'fallback' },
+        -- ['<Down>'] = { 'select_next', 'fallback' },
+        -- ['<Esc>'] = { 'hide', 'fallback' },
+        ['<C-s>'] = { 'show', 'fallback' },
+        ['<C-f>'] = { 'hide', 'fallback' },
+        ['<C-n>'] = { 'select_and_accept', 'fallback' },
+        -- ['<CR>'] = { 'accept', 'fallback' },
+        ['<C-l>'] = { 'select_next', 'fallback' },
+        ['<C-h>'] = { 'select_prev', 'fallback' },
+        -- ['<Tab>'] = { 'snippet_forward', 'fallback' },
+        -- ['<S-Tab>'] = { 'snippet_backward', 'fallback' },
       },
 
+      snippets = { preset = 'luasnip' },
       signature = { enabled = true },
 
       appearance = {
@@ -66,7 +148,13 @@ return {
       -- Default list of enabled providers defined so that you can extend it
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'buffer', 'codecompanion' },
+        default = function(ctx)
+          local sources = { 'lsp', 'path', 'snippets', 'buffer' }
+          if package.loaded["codecompanion"] then
+            table.insert(sources, "codecompanion")
+          end
+          return sources
+        end,
       },
       cmdline = { sources = { "cmdline" } },
 
@@ -187,10 +275,16 @@ return {
   {
     "neovim/nvim-lspconfig",
     dependencies = {
-      "j-hui/fidget.nvim"
+      "j-hui/fidget.nvim",
+      { "custom/qfclose", dev = true },
     },
-    ft = { 'lua', 'python', 'c', 'cpp' },
+    ft = { 'lua', 'python', 'c', 'cpp', 'rust' },
     config = function(_, opts)
+      vim.keymap.del({ "n", "x" }, "gra")
+      vim.keymap.del("n", "gri")
+      vim.keymap.del("n", "grn")
+      vim.keymap.del("n", "grr")
+
       -- TODO: test what toggling this does
       require("lspconfig.ui.windows").default_options.border = "single"
 
@@ -214,6 +308,7 @@ return {
       local legendary = require("legendary")
       local t = require("legendary.toolbox")
 
+      -- TODO: this entire section from here is a mess
       local function autocmds(client, bufnr)
         if not client:supports_method("textDocument/documentHighlight") then
           return
@@ -278,117 +373,117 @@ return {
 
         vim.g.lsp_commands = true
       end
-      -- local function mappings(client, bufnr)
-      --   if
-      --     #vim.tbl_filter(function(keymap)
-      --       return (keymap.desc or ""):lower() == "rename symbol"
-      --     end, vim.api.nvim_buf_get_keymap(bufnr, "n")) > 0
-      --   then
-      --     return {}
-      --   end
-      --
-      --   legendary.keymaps({
-      --     itemgroup = "LSP",
-      --     icon = "",
-      --     description = "LSP related functionality",
-      --     keymaps = {
-      --       {
-      --         "gf",
-      --         function()
-      --           require("snacks").picker.diagnostics_buffer()
-      --         end,
-      --         description = "Find diagnostics",
-      --         opts = { noremap = true, buffer = bufnr },
-      --       },
-      --       {
-      --         "gq",
-      --         function()
-      --           require("conform").format({ async = true, bufnr = bufnr, lsp_format = "fallback" })
-      --         end,
-      --         description = "Format",
-      --         opts = { buffer = bufnr },
-      --       },
-      --       {
-      --         "gr",
-      --         function()
-      --           require("snacks").picker.lsp_references()
-      --         end,
-      --         description = "Find references",
-      --         opts = { buffer = bufnr },
-      --       },
-      --       {
-      --         "gl",
-      --         "<cmd>lua vim.diagnostic.open_float(0, { border = 'single', source = 'always' })<CR>",
-      --         description = "Show line diagnostics",
-      --         opts = { buffer = bufnr },
-      --       },
-      --       {
-      --         "K",
-      --         "<cmd>lua vim.lsp.buf.hover<CR>",
-      --         description = "Show hover information",
-      --         opts = { buffer = bufnr },
-      --       },
-      --
-      --       {
-      --         "gd",
-      --         function()
-      --           require("snacks").picker.lsp_definitions()
-      --         end,
-      --         description = "Go to definition",
-      --         opts = { buffer = bufnr },
-      --       },
-      --       {
-      --         "gi",
-      --         "<cmd>lua vim.lsp.buf.implementation()<CR>",
-      --         description = "Go to implementation",
-      --         opts = { buffer = bufnr },
-      --       },
-      --       {
-      --         "gt",
-      --         "<cmd>lua vim.lsp.buf.type_definition()<CR>",
-      --         description = "Go to type definition",
-      --         opts = { buffer = bufnr },
-      --       },
-      --       {
-      --         "<LocalLeader>p",
-      --         t.lazy_required_fn("nvim-treesitter.textobjects.lsp_interop", "peek_definition_code", "@block.outer"),
-      --         description = "Peek definition",
-      --         opts = { buffer = bufnr },
-      --       },
-      --       {
-      --         "ga",
-      --         "<cmd>lua vim.lsp.buf.code_action()<CR>",
-      --         description = "Show code actions",
-      --         opts = { buffer = bufnr },
-      --       },
-      --       {
-      --         "gs",
-      --         "<cmd>lua vim.lsp.buf.signature_help()<CR>",
-      --         description = "Show signature help",
-      --         opts = { buffer = bufnr },
-      --       },
-      --       {
-      --         "<LocalLeader>rn",
-      --         "<cmd>lua vim.lsp.buf.rename()<CR>",
-      --         description = "Rename symbol",
-      --         opts = { buffer = bufnr },
-      --       },
-      --
-      --       {
-      --         "[",
-      --         "<cmd>lua vim.diagnostic.jump({count = -1, float = true})<CR>",
-      --         description = "Go to previous diagnostic item",
-      --         opts = { buffer = bufnr },
-      --       },
-      --       {
-      --         "]",
-      --         "<cmd>lua vim.diagnostic.jump({count = 1, float = true})<CR>",
-      --         description = "Go to next diagnostic item",
-      --         opts = { buffer = bufnr },
-      --       },
-      --     },
-      --   })
-      -- end
+
+      local function mappings(client, bufnr)
+        if
+            #vim.tbl_filter(function(keymap)
+              return (keymap.desc or ""):lower() == "rename symbol"
+            end, vim.api.nvim_buf_get_keymap(bufnr, "n")) > 0
+        then
+          return {}
+        end
+
+        legendary.keymaps({
+          itemgroup = "LSP",
+          icon = "",
+          description = "LSP related functionality",
+          keymaps = {
+            {
+              "gq",
+              function()
+                require("conform").format({ async = true, bufnr = bufnr, lsp_format = "fallback" })
+              end,
+              description = "Format",
+              opts = { buffer = bufnr },
+            },
+            {
+              "gr",
+              function()
+                vim.lsp.buf.references()
+              end,
+              description = "Find references",
+              opts = { buffer = bufnr },
+            },
+            {
+              "gl",
+              function() vim.diagnostic.open_float(0, { border = 'single', source = 'always' }) end,
+              description = "Show line diagnostics",
+              opts = { buffer = bufnr },
+            },
+            {
+              "K",
+              vim.lsp.buf.hover,
+              description = "Show hover information",
+              opts = { buffer = bufnr },
+            },
+
+            {
+              "gd",
+              vim.lsp.buf.definition,
+              description = "Go to definition",
+              opts = { buffer = bufnr },
+            },
+            {
+              "gi",
+              vim.lsp.buf.implementation,
+              description = "Go to implementation",
+              opts = { buffer = bufnr },
+            },
+            {
+              "gt",
+              vim.lsp.buf.type_definition,
+              description = "Go to type definition",
+              opts = { buffer = bufnr },
+            },
+            {
+              "<leader>p",
+              t.lazy_required_fn("nvim-treesitter.textobjects.lsp_interop", "peek_definition_code", "@block.outer"),
+              description = "Peek definition",
+              opts = { buffer = bufnr },
+            },
+            {
+              "ga",
+              vim.lsp.buf.code_action,
+              description = "Show code actions",
+              opts = { buffer = bufnr },
+            },
+            {
+              "gs",
+              vim.lsp.buf.signature_help,
+              description = "Show signature help",
+              opts = { buffer = bufnr },
+            },
+            {
+              "grn",
+              vim.lsp.buf.rename,
+              description = "Rename symbol",
+              opts = { buffer = bufnr },
+            },
+
+            {
+              "[",
+              function()
+                vim.diagnostic.jump({ count = -1, float = true })
+              end,
+              description = "Go to previous diagnostic item",
+              opts = { buffer = bufnr },
+            },
+            {
+              "]",
+              function()
+                vim.diagnostic.jump({ count = 1, float = true })
+              end,
+              description = "Go to next diagnostic item",
+              opts = { buffer = bufnr },
+            },
+            {
+              "gx",
+              require("qfclose").close_latest,
+              description = "Go to next diagnostic item",
+            },
+          },
+        })
+      end
 
       -- LspAttach is where you enable features that only work
       -- if there is a language server active in the file
@@ -405,26 +500,8 @@ return {
 
           autocmds(client, bufnr)
           commands(client, bufnr)
-          -- mappings(client, bufnr)
+          mappings(client, bufnr)
         end,
-      })
-
-      require("mason").setup()
-      require("mason-lspconfig").setup({
-        ensure_installed = {
-          "lua_ls",
-          "pyright",
-          "clangd"
-        },
-        handlers = {
-          -- this first function is the "default handler"
-          -- it applies to every language server without a "custom handler"
-          function(ls)
-            require("lspconfig")[ls].setup({
-              capabilities = capabilities,
-            })
-          end,
-        },
       })
 
       vim.diagnostic.config({
@@ -433,6 +510,7 @@ return {
         -- TODO: test what toggling these does
         update_in_insert = true,
         virtual_text = false,
+        float = { border = 'single' },
         -- virtual_text = {
         --   prefix = "",
         --   spacing = 0,

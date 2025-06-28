@@ -23,4 +23,7 @@ require("lazy").setup({
     enabled = true,
     notify = false,
   },
+  dev = {
+    path = '~/.config/nvim/lua/plugins/custom/'
+  }
 })

@@ -48,3 +48,9 @@ style = "Regular"
 
 [window]
 opacity = 0.2
+
+# [keyboard]
+# bindings = [
+# { key = "Space", mods = "Shift", chars = "\u2660" }
+# ]
+

@@ -58,8 +58,18 @@ return {
     keys = {
       {
         "<leader>tt",
-        "<cmd>Trouble todo<CR>",
+        "<cmd>Trouble todo toggle<CR>",
         desc = "List all project todos using Trouble"
+      },
+      {
+        "<leader>tn",
+        function() require("todo-comments").jump_next() end,
+        desc = "Jump to next todo comment"
+      },
+      {
+        "<leader>tN",
+        function() require("todo-comments").jump_prev() end,
+        desc = "Jump to previous todo comment"
       },
     },
     opts = {},
@@ -84,8 +94,8 @@ return {
   {
     "olimorris/codecompanion.nvim",
     lazy = true,
+    -- enabled = false, -- PACS exam requirements
     dependencies = {
-      "nvim-lua/plenary.nvim",
       {
         "echasnovski/mini.diff",
         config = function()
@@ -95,7 +105,15 @@ return {
             source = diff.gen_source.none(),
           })
         end,
+        "saghen/blink.cmp",
       },
+      {
+        "Davidyz/VectorCode",
+        version = "*",      -- optional, depending on whether you're on nightly or release
+        dependencies = { "nvim-lua/plenary.nvim" },
+        build = "pipx upgrade vectorcode",
+        cmd = "VectorCode", -- if you're lazy-loading VectorCode
+      }
     },
     cmd = {
       "CodeCompanionActions",
@@ -106,90 +124,74 @@ return {
     keys = {
       {
         "<leader>l",
-        nil,
-        description = "Open the action palette",
+        "<cmd>CodeCompanionActions<CR>",
+        desc = "Open the action palette",
         mode = { "n", "v" },
       },
-    },
-    opts = {
-      adapters = {
-        gemini = function()
-          return require("codecompanion.adapters").extend("gemini", {
-            schema = {
-              model = {
-                default = "gemini-2.5-flash-preview-04-17",
-              },
-            },
-          })
-        end
+      {
+        "<leader>c",
+        "<cmd>CodeCompanionChat Toggle<CR>",
+        desc = "Toggle the chat",
+        mode = { "n" },
       },
-      strategies = {
-        chat = {
-          adapter = "gemini",
-          opts = {
-            schema = {
-              model = {
-                default = "gemini-2.5-pro-preview-03-25",
+    },
+    opts = function()
+      require("vectorcode")
+      return {
+        extensions = {
+          vectorcode = {
+            opts = { add_tool = true, add_slash_command = true, tool_opts = {} },
+          },
+        },
+        adapters = {
+          gemini = function()
+            return require("codecompanion.adapters").extend("gemini", {
+              schema = {
+                model = {
+                  default = "gemini-2.5-flash-preview-04-17",
+                },
+              },
+            })
+          end
+        },
+        strategies = {
+          chat = {
+            adapter = "gemini",
+            opts = {
+              schema = {
+                model = {
+                  default = "gemini-2.5-pro-preview-03-25",
+                },
               },
             },
           },
-        },
-        inline = {
-          adapter = "gemini",
-        },
-        cmd = {
-          adapter = "gemini",
-        },
-      },
-      display = {
-        action_palette = {
-          provider = "default",
-        },
-        chat = {
-          -- show_references = true,
-          -- show_header_separator = false,
-          -- show_settings = false,
-        },
-        diff = {
-          provider = "mini_diff",
-        },
-      },
-      opts = {
-        log_level = "DEBUG",
-      },
-    },
-    -- init = function()
-    --   vim.cmd([[cab cc CodeCompanion]])
-    -- end,
-    opts = {},
-    config = function()
-      require("legendary").keymaps({
-        {
-          itemgroup = "CodeCompanion",
-          icon = "",
-          description = "Use the power of AI...",
-          keymaps = {
-            {
-              "<leader>l",
-              "<cmd>CodeCompanionActions<CR>",
-              description = "Open the action palette",
-              mode = { "n", "v" },
-            },
-            -- {
-            --   "<leader>a",
-            --   "<cmd>CodeCompanionChat Toggle<CR>",
-            --   description = "Toggle a chat buffer",
-            --   mode = { "n", "v" },
-            -- },
-            -- {
-            --   "ga",
-            --   "<cmd>CodeCompanionChat Add<CR>",
-            --   description = "Add selected text to a chat buffer",
-            --   mode = { "n", "v" },
-            -- },
+          inline = {
+            adapter = "gemini",
+          },
+          cmd = {
+            adapter = "gemini",
           },
         },
-      })
+        display = {
+          action_palette = {
+            provider = "default",
+          },
+          chat = {
+            -- show_references = true,
+            -- show_header_separator = false,
+            -- show_settings = false,
+          },
+          diff = {
+            provider = "mini_diff",
+          },
+        },
+        opts = {
+          log_level = "DEBUG",
+        },
+      }
+    end,
+    init = function()
+      vim.cmd([[cab cc CodeCompanion]])
     end,
   },
 }
