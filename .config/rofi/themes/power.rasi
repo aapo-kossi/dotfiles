@@ -1,0 +1,239 @@
+/**
+ *
+ * Author : Aditya Shakya (adi1090x)
+ * Github : @adi1090x
+ *
+ * Rofi Theme File
+ * Rofi Version: 1.7.3
+ **/
+
+/*****----- Configuration -----*****/
+configuration {
+    show-icons:                 false;
+}
+
+/*****----- Global Properties -----*****/
+* {
+    font:                        "Hack Nerd Font Propo 12";
+    background:                  #11092D88;
+    background-alt:              #292e4288;
+    foreground:                  #c0caf5;
+    selected:                    #bb9af7;
+    active:                      #6E77FF;
+    urgent:                      #8E3596;
+}
+
+/*****----- Main Window -----*****/
+window {
+    transparency:                "real";
+    location:                    center;
+    anchor:                      center;
+    fullscreen:                  false;
+    width:                       1300px;
+    height:                      860px;
+    x-offset:                    0px;
+    y-offset:                    0px;
+
+    padding:                     0px;
+    border:                      2px;
+    border-radius:		 4px;
+    border-color:                @selected;
+    cursor:                      "default";
+    children:                    [ "mainwindow" ];
+    background-color:            @background;
+}
+
+/*****----- Main Box -----*****/
+mainwindow {
+    background-color:            transparent;
+    orientation:                 vertical;
+    background-image:            url("~/.config/rofi/images/fuji.jpg", width);
+    children:                    [ "inputbar", "dummy", "listview" ];
+    // background-color:                  #000000;
+}
+
+// /*****----- Imagebox -----*****/
+// imagebox {
+//     expand:                      false;
+//     width:                       800px;
+//     spacing:                     0px;
+//     padding:                     100px;
+//     background-color:            transparent;
+//     children:                    [ "inputbar", "dummy", "message" ];
+// }
+
+/*****----- Inputbar -----*****/
+inputbar {
+    layout:			 horizontal;
+    background-color: transparent;
+    children:                    [ "leftbox", "dummy", "rightbox" ];
+    // border: 2px;
+    // border-color: black;
+}
+
+/*****----- Left side widgets -----*****/
+leftbox {
+    padding:                     10px 100px 10px 15px;
+    margin:			 64px 32px;
+    spacing:                     24px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    children:                    [ "prompt", "dummy", "entry" ];
+    // children:                    [ "promptbox" ];
+}
+
+// /*****----- Prompt -----*****/
+// promptbox {
+//     expand: true;
+//     orientation:		 horizontal;
+//     background-color:            @urgent;
+//     spacing: 200px;
+//     // padding:			 10px 10px 10px 10px;
+//     children:		         [ "dummy", "prompt", "dummy" ];
+// }
+// prompt {
+//     // horizontal-align:            0.50;
+//     // vertical-align:              0.50;
+//     padding:                     35px;
+//     enabled:                     true;
+//     expand:                      false;
+//     background-color:            transparent;
+// }
+prompt {
+    enabled:                     true;
+    expand:                      false;
+    // width:                       200px;
+    // margin:			 0px 100px;
+    padding:                     10px 10px 10px 10px;
+    border-radius:               4px;
+    background-color:            transparent;
+    border-color:                @selected;
+    border:                      2px;
+    text-color:			 inherit;
+    background-image:            linear-gradient(270deg, #1f2335cc,#1f233522);
+}
+
+entry {
+    enabled:                     true;
+    expand:                      false;
+    width:                       20px;
+    // margin:			 100px;
+    padding:                     10px 0px 10px 10px;
+    border-radius:               4px;
+    background-color:            transparent;
+    text-color:                  inherit;
+    cursor:                      text;
+    cursor-color:                transparent;
+    // hide-cursor-on-empty:        true;
+    placeholder:                 "Power menu";
+    placeholder-color:           @foreground;
+    border-color:                @selected;
+    border:                      2px;
+    background-image:            linear-gradient(270deg, #1f2335cc,#1f233522);
+}
+
+
+/*****----- Entry -----*****/
+// entrybox {
+//     // padding:                     20px;
+//     // spacing:                     20px;
+//     background-color:            transparent;
+//     text-color:                  @background;
+//     children:                    [ "entry" ];
+// }
+dummy {
+    background-color:            transparent;
+}
+
+/*****----- Right side widgets -----*****/
+rightbox {
+    // width:		         200px;
+    padding:			 0px 48px 0px 0px;
+    // height:		         30px;
+    background-color:		 transparent;
+    children:		         [ "dummy", "messagebox", "dummy" ];
+}
+
+/*****----- Message -----*****/
+messagebox {
+    expand: false;
+    // width:		         200px;
+    // height:		         30px;
+    padding:			 10px 0px 14px 0px;
+    background-color:            transparent;
+    background-image:            linear-gradient(270deg, #1f2335cc,#1f233522);
+    border-radius:               4px;
+    border-color:                @selected;
+    border:                      2px;
+    children:                    ["message"];
+}
+message {
+    enabled:                     true;
+    // width:		         200px;
+    // height:		         30px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+}
+
+textbox {
+    enabled:			 true;
+    background-color:            inherit;
+    text-color:                  inherit;
+    padding:                     0px 10px;
+    vertical-align:              0.5;
+    horizontal-align:            1.0;
+}
+
+/*****----- Listview -----*****/
+listview {
+    enabled:                     true;
+    columns:                     6;
+    // lines:                       1;
+    cycle:                       true;
+    dynamic:                     false;
+    scrollbar:                   false;
+    layout:                      horizontal;
+    flow:                        horizontal;
+    reverse:                     false;
+    fixed-height:                true;
+    fixed-columns:               true;
+    // border-color:		 black;
+    // border:                      2px;
+    // height:                      10px;
+    scrollbar-width:             0px;
+
+    spacing:                     0px;
+    margin:                      70px 75px 0px 75px;
+    padding:                     0px;
+    background-color:            transparent;
+    cursor:                      "default";
+}
+
+/*****----- Elements -----*****/
+element {
+    enabled:                     true;
+    padding:                     50px 60px;
+    margin:                      5px;
+    border-radius:               4px;
+    // background-color:            @background-alt;
+    background-color:            transparent;
+    border-color:                @selected;
+    border:                      3px;
+    text-color:                  @selected;
+    cursor:                      pointer;
+    background-image:            linear-gradient(270deg, #1f2335cc,#1f233522);
+}
+element-text {
+    font:                        "Hack Nerd Font Propo 48";
+    background-color:            transparent;
+    text-color:                  inherit;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+}
+element selected.normal {
+    background-color:            @background-alt;
+    border:                      6px;
+    text-color:                  @foreground;
+    border-color:                @foreground;
+}
