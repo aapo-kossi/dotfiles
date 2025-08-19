@@ -1,0 +1,131 @@
+
+{
+    "reload_style_on_change": true,
+	"layer": "top",
+    "spacing": 0,
+	"modules-left": ["hyprland/workspaces", "bluetooth", "hyprland/submap"],
+	"modules-center": ["hyprland/window"],
+	"modules-right": [
+          "custom/notifications",
+          "group/right"
+        ],
+	"hyprland/window": {
+		"max-length": 50
+	},
+	"battery": {
+		"format": "{capacity}% {icon}",
+		"format-icons": ["", "", "", "", ""]
+	},
+    "group/right" : {
+        "orientation": "inherit",
+        "modules": [
+	  "mpris",
+	  "cpu",
+	  "backlight",
+          "pulseaudio",
+          "memory",
+          "disk",
+          "network",
+          "cffi/power_mod",
+          "tray",
+          "clock"
+        ]
+    },
+    // "group/battery-and-power" : {
+    //     "orientation": "inherit",
+    //     "modules": ["battery", "power-profiles-daemon"]
+    // },
+    "cffi/power_mod": {
+        "module_path": "/home/akossi/projects/cpp/waybar_power/lib/libmy_power_widget.so.1.0",
+        "text-fmt": "{profile_icon} {text} {status_icon}",
+        "tooltip-fmt": "{profile}, {V} V {V_min} ",
+        "icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "network": {
+        "format": "{ifname}",
+        "format-wifi": "{icon}",
+        "format-icons": {
+            "wifi": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+            "ethernet": ["󰈀"],
+            "disconnected": ["󰌙"],
+        },
+        "format-ethernet": "{ipaddr}/{cidr}{icon}",
+        "format-disconnected": "{icon}", //An empty format will hide the module.
+        "tooltip-format": "{ifname} via {gwaddr}",
+        "tooltip-format-wifi": "{essid} {bandwidthTotalBits:>5} ({signalStrength}%) {icon}",
+        "tooltip-format-ethernet": "{ifname} ",
+        "tooltip-format-disconnected": "Disconnected",
+    },
+	"memory": {
+        "interval": 11,
+		"format": " {used}GiB"
+	},
+	"bluetooth": {
+		"on-click": "~/.config/waybar/scripts/toggle_bluetooth.sh {state}"
+	},
+    // "battery-and-power": {
+    //     "on-click":
+    // },
+    "cpu": {
+        "interval": 3,
+        "format": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}",
+        "format-icons": [
+            "<span color='#c0caf5'>▁</span>", // green
+            "<span color='#b4f9f8'>▂</span>", // blue
+            "<span color='#b4f9f8'>▃</span>", // white
+            "<span color='#73daca'>▄</span>", // white
+            "<span color='#e0af68'>▅</span>", // yellow
+            "<span color='#ff9e64'>▆</span>", // yellow
+            "<span color='#f7768e'>▇</span>", // orange
+            "<span color='#bb9af7'>█</span>"  // red
+        ]
+    },
+    "custom/notifications": {
+      "tooltip": false,
+      "format": "{icon}",
+      "format-icons": {
+        "notification": "<span foreground='red'><sup></sup></span>",
+        "none": "",
+        "dnd-notification": "<span foreground='red'><sup></sup></span>",
+        "dnd-none": "",
+        "inhibited-notification": "<span foreground='red'><sup></sup></span>",
+        "inhibited-none": "",
+        "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
+        "dnd-inhibited-none": ""
+      },
+      "return-type": "json",
+      "exec-if": "which swaync-client",
+      "exec": "swaync-client -swb",
+      "on-click": "swaync-client -t -sw",
+      "on-click-right": "swaync-client -d -sw",
+      "escape": true
+    },
+	"backlight": {
+		"format": "{icon} {percent}%",
+        "format-icons": ["󰃜", "󰃛", "󰃚"]
+	},
+	"pulseaudio": {
+		"format": "{icon}{volume}% {format_source}",
+		"format-muted": "{volume}% {format_source}",
+		"format-source": "",
+		"format-source-muted": "",
+        "format-icons": ["󰕿", "󰖀", "󰕾"]
+	},
+	"mpris": {
+		"format": " {title} {status_icon}",
+		"format-stopped": "",
+        "title-len": 10,
+        "status-icons": {
+            "paused": "󰏤",
+            "playing": "󰐊"
+        },
+	},
+	"disk": {
+        "interval": 97,
+		"format": "/: {used}"
+	},
+	"clock": {
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+		"format-alt": "{:%a, %d. %b  %H:%M}"
+	}
+}
