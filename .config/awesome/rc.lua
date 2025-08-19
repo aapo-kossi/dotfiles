@@ -99,8 +99,8 @@ myawesomemenu = {
 }
 
 mymainmenu = awful.menu({ items = { {"power", 'rofi -show p -modi "p:~/.local/bin/rofi-power-menu  \
-                                               --choices=cancel/shutdown/reboot/suspend/logout" \
-					       -no-click-to-exit -theme-str "window {width: 10%; height:10%;}"'
+                                               --choices=suspend/shutdown/reboot/logout" \
+					        -theme-str "window {width: 10%; height:10%;}"'
 			            },
 	                            { "awesome", myawesomemenu, beautiful.awesome_icon },
                                     { "open terminal", terminal }
@@ -519,8 +519,8 @@ globalkeys = gears.table.join(
               {description = "Fullscreen screenshot", group = "applications"}),
     awful.key({ modkey,           }, "BackSpace", function ()
                   awful.util.spawn_with_shell('rofi -show p -modi "p:~/.local/bin/rofi-power-menu  \
-                               --choices=cancel/shutdown/reboot/suspend/logout" \
-					           -no-click-to-exit -theme-str "window {width: 10%; height:10%;}"')
+                               --choices=suspend/shutdown/reboot/logout" \
+					            -theme-str "window {width: 10%; height:10%;}"')
               end,
               {description = "Power menu", group = "launcher"}),
 

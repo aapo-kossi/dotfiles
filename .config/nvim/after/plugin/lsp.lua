@@ -28,12 +28,12 @@ cmp.setup({
 })
 require('mason').setup({})
 require('mason-lspconfig').setup({
-	ensure_installed = {
-		"pyright",
-	},
-	handlers = {
-		lsp_zero.default_setup,
-	},
+  ensure_installed = {"pyright"},
+  handlers = {
+    function(server_name)
+      require('lspconfig')[server_name].setup({})
+    end,
+  },
 })
 
 require("formatter").setup {
@@ -43,3 +43,5 @@ require("formatter").setup {
         }
     }
 }
+require("lspconfig").tsserver.setup({})
+
