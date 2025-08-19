@@ -460,22 +460,22 @@ return {
               opts = { buffer = bufnr },
             },
 
-            {
-              "[",
-              function()
-                vim.diagnostic.jump({ count = -1, float = true })
-              end,
-              description = "Go to previous diagnostic item",
-              opts = { buffer = bufnr },
-            },
-            {
-              "]",
-              function()
-                vim.diagnostic.jump({ count = 1, float = true })
-              end,
-              description = "Go to next diagnostic item",
-              opts = { buffer = bufnr },
-            },
+            -- {
+            --   "[",
+            --   function()
+            --     vim.diagnostic.jump({ count = -1, float = true })
+            --   end,
+            --   description = "Go to previous diagnostic item",
+            --   opts = { buffer = bufnr },
+            -- },
+            -- {
+            --   "]",
+            --   function()
+            --     vim.diagnostic.jump({ count = 1, float = true })
+            --   end,
+            --   description = "Go to next diagnostic item",
+            --   opts = { buffer = bufnr },
+            -- },
             {
               "gx",
               require("qfclose").close_latest,

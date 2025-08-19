@@ -30,6 +30,7 @@ vim.opt.diffopt:append('vertical')
 
 -- Set leader key
 vim.g.mapleader = " "
+vim.g.maplocalleader = ","
 
 -- Folds
 vim.wo.foldlevel = 99
