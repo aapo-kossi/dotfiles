@@ -11,6 +11,7 @@ return {
       ensure_installed = {
         "lua_ls",
         "pyright",
+        "ruff",
         "clangd",
         "rust_analyzer"
       },
@@ -215,7 +216,7 @@ return {
         lua = { "stylua" },
         c = { "clang-format" },
         cpp = { "clang-format" },
-        python = { "isort", "black" },
+        python = { "ruff_fix", "ruff_format", "ruff_organize_imports" },
       },
       -- Set default options
       default_format_opts = {
@@ -504,6 +505,21 @@ return {
         end,
       })
 
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = vim.api.nvim_create_augroup('lsp_attach_disable_ruff_hover', { clear = true }),
+        callback = function(args)
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if client == nil then
+            return
+          end
+          if client.name == 'ruff' then
+            -- Disable hover in favor of Pyright
+            client.server_capabilities.hoverProvider = false
+          end
+        end,
+        desc = 'LSP: Disable hover capability from Ruff',
+      })
+
       vim.diagnostic.config({
         severity_sort = true,
         underline = false,
@@ -517,6 +533,33 @@ return {
         -- },
       })
     end,
+    opts = {
+      servers = {
+        ruff = {
+          init_options = {
+            settings = {
+              configuration = {
+                lint = {
+                  unfixable = { "F401" },
+                  ["extend-select"] = { "TID251" },
+                  ["flake8-tidy-imports"] = {
+                    ["banned-api"] = {
+                      ["typing.TypedDict"] = {
+                        msg = "Use `typing_extensions.TypedDict` instead"
+                      }
+                    }
+                  }
+                },
+                format = {
+                  ["quote-style"] = "single"
+                }
+              }
+            }
+          }
+        }
+      }
+
+    }
   }
 
 }

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+klist -s > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "A valid Kerberos ticket exists. Trying to renew"
+    fish -c 'sleep 2; kinit -R -f -l 25:00' &
+else
+    echo "Creating new Kerberos ticket"
+    command -v pass > /dev/null
+    if [ $? -eq 0 ]; then
+        fish -c 'sleep 2; pass auth.cern.ch/akossi | kinit -f -r 192:00:00' &
+    fi
+fi
