@@ -15,13 +15,17 @@ return {
     init = function()
       -- VimTeX configuration goes here, e.g.
       vim.g.vimtex_view_method = "zathura"
+      vim.g.vimtex_compiler_latexmk_engines = {
+        _ = "-lualatex"
+      }
       vim.g.vimtex_compiler_latexmk = {
         options = {
-          '-xelatex',
+          -- '-f',
+          '-shell-escape',
+          '-time',
           '-file-line-error',
           '-synctex=1',
           '-interaction=nonstopmode',
-          '-f',
         },
       }
     end
@@ -110,107 +114,107 @@ return {
   },
 
   -- Plugin: slop :)
-  {
-    "olimorris/codecompanion.nvim",
-    lazy = true,
-    -- enabled = false, -- PACS exam requirements
-    dependencies = {
-      {
-        "echasnovski/mini.diff",
-        config = function()
-          local diff = require("mini.diff")
-          diff.setup({
-            -- Disabled by default
-            source = diff.gen_source.none(),
-          })
-        end,
-        "saghen/blink.cmp",
-      },
-      {
-        "Davidyz/VectorCode",
-        version = "*", -- optional, depending on whether you're on nightly or release
-        dependencies = { "nvim-lua/plenary.nvim" },
-        build = "pipx upgrade vectorcode",
-        cmd = "VectorCode", -- if you're lazy-loading VectorCode
-      }
-    },
-    cmd = {
-      "CodeCompanionActions",
-      "CodeCompanionChat",
-      "CodeCompanion",
-      "CodeCompanionCmd"
-    },
-    keys = {
-      {
-        "<leader>l",
-        "<cmd>CodeCompanionActions<CR>",
-        desc = "Open the action palette",
-        mode = { "n", "v" },
-      },
-      {
-        "<leader>c",
-        "<cmd>CodeCompanionChat Toggle<CR>",
-        desc = "Toggle the chat",
-        mode = { "n" },
-      },
-    },
-    opts = function()
-      require("vectorcode")
-      return {
-        extensions = {
-          vectorcode = {
-            opts = { add_tool = true, add_slash_command = true, tool_opts = {} },
-          },
-        },
-        adapters = {
-          gemini = function()
-            return require("codecompanion.adapters").extend("gemini", {
-              schema = {
-                model = {
-                  default = "gemini-2.5-flash-preview-04-17",
-                },
-              },
-            })
-          end
-        },
-        strategies = {
-          chat = {
-            adapter = "gemini",
-            opts = {
-              schema = {
-                model = {
-                  default = "gemini-2.5-pro-preview-03-25",
-                },
-              },
-            },
-          },
-          inline = {
-            adapter = "gemini",
-          },
-          cmd = {
-            adapter = "gemini",
-          },
-        },
-        display = {
-          action_palette = {
-            provider = "default",
-          },
-          chat = {
-            -- show_references = true,
-            -- show_header_separator = false,
-            -- show_settings = false,
-          },
-          diff = {
-            provider = "mini_diff",
-          },
-        },
-        opts = {
-          log_level = "DEBUG",
-        },
-      }
-    end,
-    init = function()
-      vim.cmd([[cab cc CodeCompanion]])
-    end,
-  },
+  -- {
+  --   "olimorris/codecompanion.nvim",
+  --   lazy = true,
+  --   -- enabled = false, -- PACS exam requirements
+  --   dependencies = {
+  --     {
+  --       "echasnovski/mini.diff",
+  --       config = function()
+  --         local diff = require("mini.diff")
+  --         diff.setup({
+  --           -- Disabled by default
+  --           source = diff.gen_source.none(),
+  --         })
+  --       end,
+  --       "saghen/blink.cmp",
+  --     },
+  --     {
+  --       "Davidyz/VectorCode",
+  --       version = "*", -- optional, depending on whether you're on nightly or release
+  --       dependencies = { "nvim-lua/plenary.nvim" },
+  --       build = "pipx upgrade vectorcode",
+  --       cmd = "VectorCode", -- if you're lazy-loading VectorCode
+  --     }
+  --   },
+  --   cmd = {
+  --     "CodeCompanionActions",
+  --     "CodeCompanionChat",
+  --     "CodeCompanion",
+  --     "CodeCompanionCmd"
+  --   },
+  --   keys = {
+  --     {
+  --       "<leader>l",
+  --       "<cmd>CodeCompanionActions<CR>",
+  --       desc = "Open the action palette",
+  --       mode = { "n", "v" },
+  --     },
+  --     {
+  --       "<leader>c",
+  --       "<cmd>CodeCompanionChat Toggle<CR>",
+  --       desc = "Toggle the chat",
+  --       mode = { "n" },
+  --     },
+  --   },
+  --   opts = function()
+  --     require("vectorcode")
+  --     return {
+  --       extensions = {
+  --         vectorcode = {
+  --           opts = { add_tool = true, add_slash_command = true, tool_opts = {} },
+  --         },
+  --       },
+  --       adapters = {
+  --         gemini = function()
+  --           return require("codecompanion.adapters").extend("gemini", {
+  --             schema = {
+  --               model = {
+  --                 default = "gemini-2.5-flash-preview-04-17",
+  --               },
+  --             },
+  --           })
+  --         end
+  --       },
+  --       strategies = {
+  --         chat = {
+  --           adapter = "gemini",
+  --           opts = {
+  --             schema = {
+  --               model = {
+  --                 default = "gemini-2.5-pro-preview-03-25",
+  --               },
+  --             },
+  --           },
+  --         },
+  --         inline = {
+  --           adapter = "gemini",
+  --         },
+  --         cmd = {
+  --           adapter = "gemini",
+  --         },
+  --       },
+  --       display = {
+  --         action_palette = {
+  --           provider = "default",
+  --         },
+  --         chat = {
+  --           -- show_references = true,
+  --           -- show_header_separator = false,
+  --           -- show_settings = false,
+  --         },
+  --         diff = {
+  --           provider = "mini_diff",
+  --         },
+  --       },
+  --       opts = {
+  --         log_level = "DEBUG",
+  --       },
+  --     }
+  --   end,
+  --   init = function()
+  --     vim.cmd([[cab cc CodeCompanion]])
+  --   end,
+  -- },
 }

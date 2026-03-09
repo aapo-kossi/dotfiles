@@ -10,6 +10,7 @@ return {
     opts = {
       ensure_installed = {
         "lua_ls",
+        "ltex_plus",
         "pyright",
         "ruff",
         "clangd",
@@ -535,6 +536,10 @@ return {
     end,
     opts = {
       servers = {
+        ltex_plpus = {
+          language = {"en-UK"},
+          -- TODO: fill
+        },
         ruff = {
           init_options = {
             settings = {
