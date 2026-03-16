@@ -1,0 +1,13 @@
+[Unit]
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h
+ExecStartPre=/usr/bin/nm-online -s -q
+Restart=on-failure
+RestartSec=59s
+ExecStart=kinit -r 192:00:00 -f -k -t .kerberos/akossi@CERN.CH.keytab akossi@CERN.CH
+
+[Install]
+WantedBy=network-online.target
