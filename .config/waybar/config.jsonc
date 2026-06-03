@@ -24,11 +24,18 @@
 	  "backlight",
           "pulseaudio",
           "memory",
-          "disk",
+          "group/disks",
           "network",
           "cffi/power_mod",
           "tray",
           "clock"
+        ]
+    },
+    "group/disks" : {
+        "orientation": "inherit",
+        "modules": [
+          "disk#root",
+          "disk#home"
         ]
     },
     // "group/battery-and-power" : {
@@ -68,7 +75,7 @@
     // },
     "cpu": {
         "interval": 3,
-        "format": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}",
+        "format": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}{icon12}{icon13}{icon14}{icon15}",
         "format-icons": [
             "<span color='#c0caf5'>▁</span>", // green
             "<span color='#b4f9f8'>▂</span>", // blue
@@ -115,14 +122,21 @@
 		"format": " {title} {status_icon}",
 		"format-stopped": "",
         "title-len": 10,
-        "status-icons": {
-            "paused": "󰏤",
-            "playing": "󰐊"
-        },
+            "status-icons": {
+                "paused": "󰏤",
+                "playing": "󰐊"
+            }
 	},
-	"disk": {
+	"disk#root": {
         "interval": 97,
-		"format": "/: {used}"
+		"format": "/{specific_used:0.2f}G",
+                "unit": "GB"
+	},
+	"disk#home": {
+        "path": "/home",
+        "interval": 101,
+		"format": "~{specific_used:0.2f}G",
+                "unit": "GB"
 	},
 	"clock": {
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",

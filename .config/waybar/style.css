@@ -82,10 +82,12 @@ button:hover {
     box-shadow: inset 0 -3px #c0caf5;
 }
 
+
+
 #clock,
 #cpu,
 #memory,
-#disk,
+#disks,
 #temperature,
 #backlight,
 #network,
@@ -361,5 +363,7 @@ label:focus {
 #custom-notifications {
     padding: 0 5px 0 8px;
 }
-
+#disk.root {
+    padding: 0 10px 0 0px;
+}
 

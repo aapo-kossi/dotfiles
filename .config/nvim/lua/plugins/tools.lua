@@ -54,10 +54,19 @@ return {
       })
     end,
   },
+  {
+    "folke/snacks.nvim",
+    opts = {
+      picker = { enabled = true },
+      input = { enabled = true },
+      select = { enabled = true },
+    },
+  },
 
   -- Plugin: keymap management
   {
     "mrjones2014/legendary.nvim",
+    dependencies = { "folke/snacks.nvim" },
     lazy = false,
     priority = 500,
     config = function()
@@ -67,7 +76,9 @@ return {
         keymaps = keys,
         commands = cmds.commands,
         autocmds = cmds.autocmds,
-        extensions = { lazy_nvim = true, }
+        extensions = { lazy_nvim = true, },
+        include_builtin = true,
+        include_neovim_defaults = true,
       })
     end,
   },
@@ -106,7 +117,7 @@ return {
     enabled = vim.fn.has("nvim-0.10.0") == 1,
   },
 
-  -- Plugin: progress windows?
+  -- Plugin: progress windows
   {
     "j-hui/fidget.nvim",
     cmd = { "Fidget history" },

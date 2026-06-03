@@ -3,7 +3,7 @@ Description=Refresh kerberos5 credential daily
 
 [Timer]
 OnCalendar=daily
-OnBootSec=0
+OnActiveSec=0
 Persistent=True
 
 [Install]

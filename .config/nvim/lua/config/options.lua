@@ -6,9 +6,9 @@ vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 
-vim.opt.smartindent = true
+-- vim.opt.smartindent = true
 
-vim.opt.wrap = false
+-- vim.opt.wrap = false
 
 vim.opt.swapfile = false
 vim.opt.backup = false
@@ -33,4 +33,15 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = ","
 
 -- Folds
+vim.wo.foldcolumn = '0'
 vim.wo.foldlevel = 99
+vim.opt.foldlevelstart = 99
+vim.wo.foldenable = true
+
+vim.diagnostic.config({
+  severity_sort = true,
+  underline = false,
+  update_in_insert = true,
+  virtual_text = false,
+  float = { border = 'shadow' },
+})

@@ -85,7 +85,7 @@ return {
   -- completions
   {
     'saghen/blink.cmp',
-
+    lazy = false,
     -- use a release tag to download pre-built binaries
     version = '*',
     -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
@@ -167,13 +167,15 @@ return {
       -- See the fuzzy documentation for more information
       fuzzy = { implementation = "prefer_rust_with_warning" }
     },
-    opts_extend = { "sources.default" }
+    opts_extend = { "sources.default" },
   },
 
   -- Plugin: folds
   {
     "kevinhwang91/nvim-ufo",
     dependencies = "kevinhwang91/promise-async",
+    opts = {},
+    event = "BufReadPost",
     keys = {
       {
         "zR",
@@ -190,6 +192,15 @@ return {
         desc = "Close all folds",
       },
     },
+    cmd = {
+      "UfoEnable",
+      "UfoDisable",
+      "UfoInspect",
+      "UfoAttach",
+      "UfoDetach",
+      "UfoEnableFold",
+      "UfoDisableFold",
+    }
   },
 
   -- Plugin: Formatting
@@ -274,297 +285,297 @@ return {
     },
   },
 
-  {
-    "neovim/nvim-lspconfig",
-    dependencies = {
-      "j-hui/fidget.nvim",
-      { "custom/qfclose", dev = true },
-    },
-    ft = { 'lua', 'python', 'c', 'cpp', 'rust' },
-    config = function(_, opts)
-      vim.keymap.del({ "n", "x" }, "gra")
-      vim.keymap.del("n", "gri")
-      vim.keymap.del("n", "grn")
-      vim.keymap.del("n", "grr")
-
-      -- TODO: test what toggling this does
-      require("lspconfig.ui.windows").default_options.border = "single"
-
-      require("ufo").setup()
-      local blink = require("blink.cmp")
-      local capabilities =
-          vim.tbl_deep_extend("force", blink.get_lsp_capabilities(), opts.capabilities or {}, {
-            -- TODO: test what toggling this does
-            -- textDocument = {
-            --   foldingRange = {
-            --     dynamicRegistration = false,
-            --     lineFoldingOnly = true,
-            --   },
-            -- },
-          })
-
-      local lspconfig_defaults = require("lspconfig").util.default_config
-      lspconfig_defaults.capabilities = vim.tbl_deep_extend("force", lspconfig_defaults.capabilities, capabilities)
-
-      -- Legendary.nvim
-      local legendary = require("legendary")
-      local t = require("legendary.toolbox")
-
-      -- TODO: this entire section from here is a mess
-      local function autocmds(client, bufnr)
-        if not client:supports_method("textDocument/documentHighlight") then
-          return
-        end
-        legendary.autocmds({
-          {
-            name = "LspOnAttachAutocmds",
-            clear = false,
-            {
-              { "CursorHold", "CursorHoldI" },
-              ":silent! lua vim.lsp.buf.document_highlight()",
-              opts = { buffer = bufnr },
-            },
-            {
-              "CursorMoved",
-              ":silent! lua vim.lsp.buf.clear_references()",
-              opts = { buffer = bufnr },
-            },
-          },
-        })
-      end
-      local function commands(client, bufnr)
-        -- Only need to set these once!
-        if vim.g.lsp_commands then
-          return {}
-        end
-
-        legendary.commands({
-          {
-            ":LspRestart",
-            description = "Restart any attached clients",
-          },
-          {
-            ":LspStart",
-            description = "Start the client manually",
-          },
-          {
-            ":LspInfo",
-            description = "Show attached clients",
-          },
-          {
-            "LspInstallAll",
-            function()
-              for _, name in pairs(om.lsp.servers) do
-                vim.cmd("LspInstall " .. name)
-              end
-            end,
-            description = "Install all servers",
-          },
-          {
-            "LspUninstallAll",
-            description = "Uninstall all servers",
-          },
-          {
-            "LspLog",
-            function()
-              vim.cmd("edit " .. vim.lsp.get_log_path())
-            end,
-            description = "Show logs",
-          },
-        })
-
-        vim.g.lsp_commands = true
-      end
-
-      local function mappings(client, bufnr)
-        if
-            #vim.tbl_filter(function(keymap)
-              return (keymap.desc or ""):lower() == "rename symbol"
-            end, vim.api.nvim_buf_get_keymap(bufnr, "n")) > 0
-        then
-          return {}
-        end
-
-        legendary.keymaps({
-          itemgroup = "LSP",
-          icon = "",
-          description = "LSP related functionality",
-          keymaps = {
-            {
-              "gq",
-              function()
-                require("conform").format({ async = true, bufnr = bufnr, lsp_format = "fallback" })
-              end,
-              description = "Format",
-              opts = { buffer = bufnr },
-            },
-            {
-              "gr",
-              function()
-                vim.lsp.buf.references()
-              end,
-              description = "Find references",
-              opts = { buffer = bufnr },
-            },
-            {
-              "gl",
-              function() vim.diagnostic.open_float(0, { border = 'single', source = 'always' }) end,
-              description = "Show line diagnostics",
-              opts = { buffer = bufnr },
-            },
-            {
-              "K",
-              vim.lsp.buf.hover,
-              description = "Show hover information",
-              opts = { buffer = bufnr },
-            },
-
-            {
-              "gd",
-              vim.lsp.buf.definition,
-              description = "Go to definition",
-              opts = { buffer = bufnr },
-            },
-            {
-              "gi",
-              vim.lsp.buf.implementation,
-              description = "Go to implementation",
-              opts = { buffer = bufnr },
-            },
-            {
-              "gt",
-              vim.lsp.buf.type_definition,
-              description = "Go to type definition",
-              opts = { buffer = bufnr },
-            },
-            {
-              "<leader>p",
-              t.lazy_required_fn("nvim-treesitter.textobjects.lsp_interop", "peek_definition_code", "@block.outer"),
-              description = "Peek definition",
-              opts = { buffer = bufnr },
-            },
-            {
-              "ga",
-              vim.lsp.buf.code_action,
-              description = "Show code actions",
-              opts = { buffer = bufnr },
-            },
-            {
-              "gs",
-              vim.lsp.buf.signature_help,
-              description = "Show signature help",
-              opts = { buffer = bufnr },
-            },
-            {
-              "grn",
-              vim.lsp.buf.rename,
-              description = "Rename symbol",
-              opts = { buffer = bufnr },
-            },
-
-            -- {
-            --   "[",
-            --   function()
-            --     vim.diagnostic.jump({ count = -1, float = true })
-            --   end,
-            --   description = "Go to previous diagnostic item",
-            --   opts = { buffer = bufnr },
-            -- },
-            -- {
-            --   "]",
-            --   function()
-            --     vim.diagnostic.jump({ count = 1, float = true })
-            --   end,
-            --   description = "Go to next diagnostic item",
-            --   opts = { buffer = bufnr },
-            -- },
-            {
-              "gx",
-              require("qfclose").close_latest,
-              description = "Go to next diagnostic item",
-            },
-          },
-        })
-      end
-
-      -- LspAttach is where you enable features that only work
-      -- if there is a language server active in the file
-      vim.api.nvim_create_autocmd("LspAttach", {
-        desc = "LSP actions",
-        callback = function(event)
-          local id = vim.tbl_get(event, "data", "client_id")
-          local client = id and vim.lsp.get_client_by_id(id)
-          if client == nil then
-            return
-          end
-
-          local bufnr = event.buf
-
-          autocmds(client, bufnr)
-          commands(client, bufnr)
-          mappings(client, bufnr)
-        end,
-      })
-
-      vim.api.nvim_create_autocmd("LspAttach", {
-        group = vim.api.nvim_create_augroup('lsp_attach_disable_ruff_hover', { clear = true }),
-        callback = function(args)
-          local client = vim.lsp.get_client_by_id(args.data.client_id)
-          if client == nil then
-            return
-          end
-          if client.name == 'ruff' then
-            -- Disable hover in favor of Pyright
-            client.server_capabilities.hoverProvider = false
-          end
-        end,
-        desc = 'LSP: Disable hover capability from Ruff',
-      })
-
-      vim.diagnostic.config({
-        severity_sort = true,
-        underline = false,
-        -- TODO: test what toggling these does
-        update_in_insert = true,
-        virtual_text = false,
-        float = { border = 'single' },
-        -- virtual_text = {
-        --   prefix = "",
-        --   spacing = 0,
-        -- },
-      })
-    end,
-    opts = {
-      servers = {
-        ltex_plpus = {
-          language = {"en-UK"},
-          -- TODO: fill
-        },
-        ruff = {
-          init_options = {
-            settings = {
-              configuration = {
-                lint = {
-                  unfixable = { "F401" },
-                  ["extend-select"] = { "TID251" },
-                  ["flake8-tidy-imports"] = {
-                    ["banned-api"] = {
-                      ["typing.TypedDict"] = {
-                        msg = "Use `typing_extensions.TypedDict` instead"
-                      }
-                    }
-                  }
-                },
-                format = {
-                  ["quote-style"] = "single"
-                }
-              }
-            }
-          }
-        }
-      }
-
-    }
-  }
+  -- {
+  --   "neovim/nvim-lspconfig",
+  --   dependencies = {
+  --     "j-hui/fidget.nvim",
+  --     { "custom/qfclose", dev = true },
+  --   },
+  --   ft = { 'lua', 'python', 'c', 'cpp', 'rust' },
+  --   config = function(_, opts)
+  --     vim.keymap.del({ "n", "x" }, "gra")
+  --     vim.keymap.del("n", "gri")
+  --     vim.keymap.del("n", "grn")
+  --     vim.keymap.del("n", "grr")
+  --
+  --     -- TODO: test what toggling this does
+  --     require("lspconfig.ui.windows").default_options.border = "single"
+  --
+  --     require("ufo").setup()
+  --     local blink = require("blink.cmp")
+  --     local capabilities =
+  --         vim.tbl_deep_extend("force", blink.get_lsp_capabilities(), opts.capabilities or {}, {
+  --           -- TODO: test what toggling this does
+  --           -- textDocument = {
+  --           --   foldingRange = {
+  --           --     dynamicRegistration = false,
+  --           --     lineFoldingOnly = true,
+  --           --   },
+  --           -- },
+  --         })
+  --
+  --     local lspconfig_defaults = require("lspconfig").util.default_config
+  --     lspconfig_defaults.capabilities = vim.tbl_deep_extend("force", lspconfig_defaults.capabilities, capabilities)
+  --
+  --     -- Legendary.nvim
+  --     local legendary = require("legendary")
+  --     local t = require("legendary.toolbox")
+  --
+  --     -- TODO: this entire section from here is a mess
+  --     local function autocmds(client, bufnr)
+  --       if not client:supports_method("textDocument/documentHighlight") then
+  --         return
+  --       end
+  --       legendary.autocmds({
+  --         {
+  --           name = "LspOnAttachAutocmds",
+  --           clear = false,
+  --           {
+  --             { "CursorHold", "CursorHoldI" },
+  --             ":silent! lua vim.lsp.buf.document_highlight()",
+  --             opts = { buffer = bufnr },
+  --           },
+  --           {
+  --             "CursorMoved",
+  --             ":silent! lua vim.lsp.buf.clear_references()",
+  --             opts = { buffer = bufnr },
+  --           },
+  --         },
+  --       })
+  --     end
+  --     local function commands(client, bufnr)
+  --       -- Only need to set these once!
+  --       if vim.g.lsp_commands then
+  --         return {}
+  --       end
+  --
+  --       legendary.commands({
+  --         {
+  --           ":LspRestart",
+  --           description = "Restart any attached clients",
+  --         },
+  --         {
+  --           ":LspStart",
+  --           description = "Start the client manually",
+  --         },
+  --         {
+  --           ":LspInfo",
+  --           description = "Show attached clients",
+  --         },
+  --         {
+  --           "LspInstallAll",
+  --           function()
+  --             for _, name in pairs(om.lsp.servers) do
+  --               vim.cmd("LspInstall " .. name)
+  --             end
+  --           end,
+  --           description = "Install all servers",
+  --         },
+  --         {
+  --           "LspUninstallAll",
+  --           description = "Uninstall all servers",
+  --         },
+  --         {
+  --           "LspLog",
+  --           function()
+  --             vim.cmd("edit " .. vim.lsp.get_log_path())
+  --           end,
+  --           description = "Show logs",
+  --         },
+  --       })
+  --
+  --       vim.g.lsp_commands = true
+  --     end
+  --
+  --     local function mappings(client, bufnr)
+  --       if
+  --           #vim.tbl_filter(function(keymap)
+  --             return (keymap.desc or ""):lower() == "rename symbol"
+  --           end, vim.api.nvim_buf_get_keymap(bufnr, "n")) > 0
+  --       then
+  --         return {}
+  --       end
+  --
+  --       legendary.keymaps({
+  --         itemgroup = "LSP",
+  --         icon = "",
+  --         description = "LSP related functionality",
+  --         keymaps = {
+  --           {
+  --             "gq",
+  --             function()
+  --               require("conform").format({ async = true, bufnr = bufnr, lsp_format = "fallback" })
+  --             end,
+  --             description = "Format",
+  --             opts = { buffer = bufnr },
+  --           },
+  --           {
+  --             "gr",
+  --             function()
+  --               vim.lsp.buf.references()
+  --             end,
+  --             description = "Find references",
+  --             opts = { buffer = bufnr },
+  --           },
+  --           {
+  --             "gl",
+  --             function() vim.diagnostic.open_float(0, { border = 'single', source = 'always' }) end,
+  --             description = "Show line diagnostics",
+  --             opts = { buffer = bufnr },
+  --           },
+  --           {
+  --             "K",
+  --             vim.lsp.buf.hover,
+  --             description = "Show hover information",
+  --             opts = { buffer = bufnr },
+  --           },
+  --
+  --           {
+  --             "gd",
+  --             vim.lsp.buf.definition,
+  --             description = "Go to definition",
+  --             opts = { buffer = bufnr },
+  --           },
+  --           {
+  --             "gi",
+  --             vim.lsp.buf.implementation,
+  --             description = "Go to implementation",
+  --             opts = { buffer = bufnr },
+  --           },
+  --           {
+  --             "gt",
+  --             vim.lsp.buf.type_definition,
+  --             description = "Go to type definition",
+  --             opts = { buffer = bufnr },
+  --           },
+  --           {
+  --             "<leader>p",
+  --             t.lazy_required_fn("nvim-treesitter.textobjects.lsp_interop", "peek_definition_code", "@block.outer"),
+  --             description = "Peek definition",
+  --             opts = { buffer = bufnr },
+  --           },
+  --           {
+  --             "ga",
+  --             vim.lsp.buf.code_action,
+  --             description = "Show code actions",
+  --             opts = { buffer = bufnr },
+  --           },
+  --           {
+  --             "gs",
+  --             vim.lsp.buf.signature_help,
+  --             description = "Show signature help",
+  --             opts = { buffer = bufnr },
+  --           },
+  --           {
+  --             "grn",
+  --             vim.lsp.buf.rename,
+  --             description = "Rename symbol",
+  --             opts = { buffer = bufnr },
+  --           },
+  --
+  --           -- {
+  --           --   "[",
+  --           --   function()
+  --           --     vim.diagnostic.jump({ count = -1, float = true })
+  --           --   end,
+  --           --   description = "Go to previous diagnostic item",
+  --           --   opts = { buffer = bufnr },
+  --           -- },
+  --           -- {
+  --           --   "]",
+  --           --   function()
+  --           --     vim.diagnostic.jump({ count = 1, float = true })
+  --           --   end,
+  --           --   description = "Go to next diagnostic item",
+  --           --   opts = { buffer = bufnr },
+  --           -- },
+  --           {
+  --             "gx",
+  --             require("qfclose").close_latest,
+  --             description = "Close latest opened quickfix/location list buffer",
+  --           },
+  --         },
+  --       })
+  --     end
+  --
+  --     -- LspAttach is where you enable features that only work
+  --     -- if there is a language server active in the file
+  --     vim.api.nvim_create_autocmd("LspAttach", {
+  --       desc = "LSP actions",
+  --       callback = function(event)
+  --         local id = vim.tbl_get(event, "data", "client_id")
+  --         local client = id and vim.lsp.get_client_by_id(id)
+  --         if client == nil then
+  --           return
+  --         end
+  --
+  --         local bufnr = event.buf
+  --
+  --         autocmds(client, bufnr)
+  --         commands(client, bufnr)
+  --         mappings(client, bufnr)
+  --       end,
+  --     })
+  --
+  --     vim.api.nvim_create_autocmd("LspAttach", {
+  --       group = vim.api.nvim_create_augroup('lsp_attach_disable_ruff_hover', { clear = true }),
+  --       callback = function(args)
+  --         local client = vim.lsp.get_client_by_id(args.data.client_id)
+  --         if client == nil then
+  --           return
+  --         end
+  --         if client.name == 'ruff' then
+  --           -- Disable hover in favor of Pyright
+  --           client.server_capabilities.hoverProvider = false
+  --         end
+  --       end,
+  --       desc = 'LSP: Disable hover capability from Ruff',
+  --     })
+  --
+  --     vim.diagnostic.config({
+  --       severity_sort = true,
+  --       underline = false,
+  --       -- TODO: test what toggling these does
+  --       update_in_insert = true,
+  --       virtual_text = false,
+  --       float = { border = 'single' },
+  --       -- virtual_text = {
+  --       --   prefix = "",
+  --       --   spacing = 0,
+  --       -- },
+  --     })
+  --   end,
+  --   opts = {
+  --     servers = {
+  --       ltex_plpus = {
+  --         language = {"en-UK"},
+  --         -- TODO: fill
+  --       },
+  --       ruff = {
+  --         init_options = {
+  --           settings = {
+  --             configuration = {
+  --               lint = {
+  --                 unfixable = { "F401" },
+  --                 ["extend-select"] = { "TID251" },
+  --                 ["flake8-tidy-imports"] = {
+  --                   ["banned-api"] = {
+  --                     ["typing.TypedDict"] = {
+  --                       msg = "Use `typing_extensions.TypedDict` instead"
+  --                     }
+  --                   }
+  --                 }
+  --               },
+  --               format = {
+  --                 ["quote-style"] = "single"
+  --               }
+  --             }
+  --           }
+  --         }
+  --       }
+  --     }
+  --
+  --   }
+  -- }
 
 }

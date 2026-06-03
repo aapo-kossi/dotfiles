@@ -92,20 +92,18 @@ return {
     keymaps = {
       {
         "<leader>n",
-        vim.diagnostic.goto_next,
+        function()
+          vim.diagnostic.jump({ count = 1, on_jump = function() vim.diagnostic.open_float({ scope = 'c' }) end, })
+        end,
         description = "Go to next diagnostic",
         mode = "n",
       },
       {
         "<leader>N",
-        vim.diagnostic.goto_prev,
+        function()
+          vim.diagnostic.jump({ count = -1, on_jump = function() vim.diagnostic.open_float({ scope = 'c' }) end, })
+        end,
         description = "Go to previous diagnostic",
-        mode = "n",
-      },
-      {
-        "<leader>d",
-        vim.lsp.buf.hover,
-        description = "Show LSP hover information",
         mode = "n",
       },
     },
