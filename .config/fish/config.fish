@@ -6,7 +6,10 @@ if status is-login
 
     if test -n "$SSH_CLIENT"; or test -n "$SSH_TTY"
     else
-        start-hyprland
+        if uwsm check may-start
+            exec uwsm start hyprland.desktop
+        end
+        # start-hyprland
     end
 
 end
