@@ -1,0 +1,9 @@
+create file /etc/udev/hwdb.d/90-esc-caps.hwdb
+
+evdev:input:*
+ KEYBOARD_KEY_3a=esc
+
+evdev:input:*
+ KEYBOARD_KEY_01=capslock
+
+

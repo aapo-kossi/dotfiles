@@ -1,0 +1,55 @@
+1. Install ukify, sbctl, tpm2-tss
+1.5: create secure boot keys, sign, and enable secure boot
+2. Add rd.luks.name=...=root to kernel parameters (/etc/cmdline.d/luks.conf)
+3. make sure initramfs hooks include systemd, sd-encrypt
+4. create /etc/kernel/uki.conf:
+
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it under the
+#  terms of the GNU Lesser General Public License as published by the Free
+#  Software Foundation; either version 2.1 of the License, or (at your option)
+#  any later version.
+#
+# Ini-style configuration file for ukify(1) which is only effective when
+# $KERNEL_INSTALL_LAYOUT or layout= in install.conf is set to uki and
+# $KERNEL_INSTALL_UKI_GENERATOR or uki_generator= in install.conf is set to
+# ukify, or is unset. $KERNEL_INSTALL_CONF_ROOT may be used to override the
+# search path.
+#
+# See kernel-install(8) for details.
+
+# [UKI]
+#Initrd=
+#Microcode=
+#Splash=
+#PCRPKey=
+#PCRBanks=
+# SecureBootSigningTool=systemd-sbsign
+# SecureBootPrivateKey=/etc/kernel/secure-boot-private-key.pem
+# SecureBootCertificate=/etc/kernel/secure-boot-certificate.pem
+#SecureBootCertificateDir=
+#SecureBootCertificateName=
+#SecureBootCertificateValidity=
+#SigningEngine=
+#SignKernel=
+
+[PCRSignature:all]
+PCRPrivateKey=/etc/systemd/tpm2-pcr-private-key.pem
+PCRPublicKey=/etc/systemd/tpm2-pcr-public-key.pem
+
+[PCRSignature:initrd]
+Phases=enter-initrd
+PCRPrivateKey=/etc/systemd/tpm2-pcr-private-key-initrd.pem
+PCRPublicKey=/etc/systemd/tpm2-pcr-public-key-initrd.pem
+
+4. create the keys with ukify genkey (--pcr-private/public-key)
+5. regenerate initramfs
+6. sudo systemd-cryptenroll --wipe-slot=tpm2 --tpm2-device auto \
+                       --tpm2-public-key /etc/systemd/tpm2-pcr-public-key-initrd.pem \
+                       --tpm2-with-pin=yes \
+                       --tpm2-public-key-pcrs=11 \
+                       --tpm2-pcrs=7 \
+                       /dev/disk/by-partlabel/<root-partlabel>
+
+
